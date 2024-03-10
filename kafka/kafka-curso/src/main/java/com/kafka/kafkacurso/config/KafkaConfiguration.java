@@ -17,40 +17,41 @@ import org.springframework.kafka.core.KafkaTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @Configuration
 public class KafkaConfiguration {
-    public Map<String,Object> producerProperties(){
-            Map<String, Object> props =new HashMap<>();
-            props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-            props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class);
-            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-            return props;
-    }
-
-    public Map<String,Object> consumerProperties(){
+    public Map<String, Object> producerProperties() {
         Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,"localhost:9092");
-        props.put(ConsumerConfig.GROUP_ID_CONFIG,"kafka-curso");
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,IntegerDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class);
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         return props;
     }
-    @Bean
-    public KafkaTemplate<String,String> kafkaTemplate(){
-      DefaultKafkaProducerFactory<String, String> producerFactory=
-              new DefaultKafkaProducerFactory<>(producerProperties());
-       ;
-      return new KafkaTemplate<>(producerFactory);
+
+    public Map<String, Object> consumerProperties() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "kafka-curso");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        return props;
     }
+
     @Bean
-    public ConsumerFactory<String,String> consumerFactory(){
+    public KafkaTemplate<String, String> kafkaTemplate() {
+        DefaultKafkaProducerFactory<String, String> producerFactory = new DefaultKafkaProducerFactory<>(
+                producerProperties());
+        return new KafkaTemplate<>(producerFactory);
+    }
+
+    @Bean
+    public ConsumerFactory<String, String> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerProperties());
     }
+
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String,String> listenerContainerFactory(){
-       ConcurrentKafkaListenerContainerFactory<String, String> listenerContainerFactory =  new ConcurrentKafkaListenerContainerFactory<>();
-       listenerContainerFactory.setConsumerFactory(consumerFactory());
-       return listenerContainerFactory;
+    public ConcurrentKafkaListenerContainerFactory<String, String> listenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, String> listenerContainerFactory = new ConcurrentKafkaListenerContainerFactory<>();
+        listenerContainerFactory.setConsumerFactory(consumerFactory());
+        return listenerContainerFactory;
     }
 }
